@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Trainer: Neuro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Calming color palette */
+            --primary-bg: #ffffff;
+            --secondary-bg: #f5f9fc;
+            --tertiary-bg: #eff6fb;
+            
+            --border-color: #e2e8f0;
+            --border-accent: #d0e1f9;
+            
+            /* Soothing blue with muted accent colors */
+            --accent-primary: #5b9bd5;
+            --accent-primary-light: #81b7e8;
+            --accent-secondary: #6db4c0;
+            --accent-tertiary: #a8d4e8;
+            
+            /* Gentle sage green accents */
+            --accent-green: #85b99e;
+            --accent-green-light: #b5d8c8;
+            
+            /* Soft lavender accents */
+            --accent-lavender: #a89ac9;
+            --accent-lavender-light: #cfc5e9;
+            
+            /* Text colors */
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-tertiary: #718096;
+            
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.03);
+            --shadow-md: 0 3px 6px -1px rgba(0,0,0,0.04), 0 2px 4px -1px rgba(0,0,0,0.02);
+            --shadow-lg: 0 8px 15px -3px rgba(0,0,0,0.03), 0 4px 6px -2px rgba(0,0,0,0.02);
+            
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            
+            --transition-all: all 0.25s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            /* Gentle pastel gradient background */
+            background: linear-gradient(135deg, #f0f7ff 0%, #f5f9fc 50%, #f2f8fc 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            line-height: 1.5;
+        }
+        
+        .app-container {
+            width: 100%;
+            max-width: 1200px;
+            min-height: 700px;
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            border-radius: var(--radius-lg);
+            background-color: var(--primary-bg);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Settings Panel */
+        .settings-panel {
+            /* Soft blue gradient background */
+            background: linear-gradient(180deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+            border-right: 1px solid var(--border-accent);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            overflow-y: auto;
+        }
+        
+        .settings-header {
+            text-align: center;
+            padding: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            background-color: var(--primary-bg);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            border: 1px solid var(--border-accent);
+        }
+        
+        .settings-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 10%;
+            right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+        }
+        
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .slider-info {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            font-weight: 400;
+            margin-bottom: 5px;
+            text-align: center;
+            font-style: italic;
+        }
+        
+        .slider-block {
+            position: relative;
+            padding-bottom: 5px;
+        }
+        
+        /* Vary slider colors for visual interest */
+        .slider-block:nth-child(2) .slider-value {
+            background-color: rgba(91, 155, 213, 0.1);
+            color: var(--accent-primary);
+        }
+        
+        .slider-block:nth-child(3) .slider-value {
+            background-color: rgba(133, 185, 158, 0.1);
+            color: var(--accent-green);
+        }
+        
+        .slider-block:nth-child(4) .slider-value {
+            background-color: rgba(168, 154, 201, 0.1);
+            color: var(--accent-lavender);
+        }
+        
+        .slider-block:nth-child(5) .slider-value {
+            background-color: rgba(109, 180, 192, 0.1);
+            color: var(--accent-secondary);
+        }
+        
+        .slider-label {
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .slider-value {
+            font-size: 14px;
+            font-weight: 600;
+            background-color: rgba(91, 155, 213, 0.1);
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+        }
+        
+        .slider {
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #e2e8f0, #edf2f7);
+            outline: none;
+            -webkit-appearance: none;
+            border-radius: var(--radius-sm);
+        }
+        
+        /* Different slider colors for each parameter */
+        #complexity-slider::-webkit-slider-thumb {
+            background: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(91, 155, 213, 0.2);
+        }
+        
+        #ambiguity-slider::-webkit-slider-thumb {
+            background: var(--accent-green);
+            box-shadow: 0 0 0 3px rgba(133, 185, 158, 0.2);
+        }
+        
+        #depth-slider::-webkit-slider-thumb {
+            background: var(--accent-lavender);
+            box-shadow: 0 0 0 3px rgba(168, 154, 201, 0.2);
+        }
+        
+        #awareness-slider::-webkit-slider-thumb {
+            background: var(--accent-secondary);
+            box-shadow: 0 0 0 3px rgba(109, 180, 192, 0.2);
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition-all);
+        }
+        
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        
+        .new-case-btn {
+            margin-top: auto;
+            padding: 14px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-all);
+            border: none;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+            font-size: 15px;
+            letter-spacing: 0.3px;
+        }
+        
+        .new-case-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: var(--transition-all);
+        }
+        
+        .new-case-btn:hover::before {
+            left: 100%;
+        }
+        
+        .new-case-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px -2px rgba(91, 155, 213, 0.25);
+        }
+        
+        .new-case-btn:active {
+            transform: translateY(0);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-accent);
+            min-width: 0;
+            background: linear-gradient(180deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+        }
+        
+        .title-bar {
+            text-align: center;
+            padding: 18px;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-accent);
+            background: linear-gradient(90deg, var(--primary-bg), var(--secondary-bg), var(--primary-bg));
+            position: relative;
+        }
+        
+        .title-bar::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 25%;
+            right: 25%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+        }
+        
+        .client-image {
+            height: 150px;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--text-tertiary);
+            font-style: italic;
+            border-bottom: 1px solid var(--border-accent);
+            background: var(--secondary-bg);
+            position: relative;
+        }
+        
+        .client-image::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px dashed var(--border-accent);
+            border-radius: var(--radius-md);
+            pointer-events: none;
+        }
+        
+        .chat-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            min-height: 0;
+        }
+        
+        .chat-header {
+            padding: 12px;
+            text-align: center;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-accent);
+            background: var(--primary-bg);
+        }
+        
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: var(--tertiary-bg);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            max-width: 80%;
+            word-wrap: break-word;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            line-height: 1.6;
+        }
+        
+        .user-message {
+            /* Soft blue gradient for user messages */
+            background: linear-gradient(135deg, #e1f0ff 0%, #e3f6ff 100%);
+            border-bottom-right-radius: 2px;
+            align-self: flex-end;
+            border: 1px solid rgba(91, 155, 213, 0.15);
+            color: var(--text-primary);
+        }
+        
+        .user-message::before {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            right: 0;
+            width: 15px;
+            height: 15px;
+            background: linear-gradient(135deg, transparent 50%, #e1f0ff 50%);
+            transform: rotate(45deg);
+            border-right: 1px solid rgba(91, 155, 213, 0.15);
+            border-bottom: 1px solid rgba(91, 155, 213, 0.15);
+        }
+        
+        .assistant-message {
+            /* Soft cream/white gradient for assistant messages */
+            background: linear-gradient(135deg, #f9fdff 0%, #ffffff 100%);
+            border-bottom-left-radius: 2px;
+            align-self: flex-start;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            color: var(--text-primary);
+        }
+        
+        .assistant-message::before {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 15px;
+            height: 15px;
+            background: linear-gradient(135deg, transparent 50%, #f9fdff 50%);
+            transform: rotate(45deg);
+            border-left: 1px solid rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid var(--border-accent);
+            background: var(--primary-bg);
+        }
+        
+        .chat-input input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            transition: var(--transition-all);
+        }
+        
+        .chat-input input:focus {
+            outline: none;
+            border-color: var(--accent-primary-light);
+            box-shadow: 0 0 0 3px rgba(91, 155, 213, 0.15);
+        }
+        
+        .chat-input button {
+            padding: 12px 18px;
+            margin-left: 10px;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition-all);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .chat-input button:hover {
+            background: linear-gradient(135deg, #6ba2d8 0%, #7bbbc5 100%);
+            box-shadow: 0 3px 8px rgba(91, 155, 213, 0.25);
+            transform: translateY(-1px);
+        }
+        
+        .download-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary-bg);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-sm);
+            padding: 6px;
+            cursor: pointer;
+            transition: var(--transition-all);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .download-btn:hover {
+            background: var(--secondary-bg);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .download-icon {
+            width: 18px;
+            height: 18px;
+            stroke: var(--accent-primary);
+        }
+        
+        /* Notes Panel */
+        .notes-panel {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            overflow-y: auto;
+            /* Soft cream/beige gradient background */
+            background: linear-gradient(180deg, var(--primary-bg) 0%, #f9f8f6 100%);
+        }
+        
+        .notes-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            text-align: center;
+            color: var(--text-primary);
+            position: relative;
+        }
+        
+        .notes-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 30%;
+            right: 30%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+        }
+        
+        .notes-textarea {
+            flex-grow: 1;
+            padding: 15px;
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-md);
+            resize: none;
+            min-height: 300px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--primary-bg);
+            box-shadow: var(--shadow-sm) inset;
+            transition: var(--transition-all);
+        }
+        
+        .notes-textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary-light);
+            box-shadow: 0 0 0 3px rgba(91, 155, 213, 0.15);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .control-btn {
+            padding: 8px;
+            background: var(--primary-bg);
+            border: 1px solid var(--border-accent);
+            border-radius: 50%;
+            cursor: pointer;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: var(--transition-all);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .control-btn:hover {
+            background: var(--secondary-bg);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .control-btn svg {
+            stroke: var(--accent-primary);
+        }
+        
+        /* Vary button colors */
+        .control-btn:nth-child(1) svg {
+            stroke: var(--accent-primary);
+        }
+        
+        .control-btn:nth-child(2) svg {
+            stroke: var(--accent-green);
+        }
+        
+        .control-btn:nth-child(3) svg {
+            stroke: var(--accent-secondary);
+        }
+        
+        .footer {
+            grid-column: 1 / span 3;
+            border-top: 1px solid var(--border-accent);
+            padding: 12px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            background: var(--primary-bg);
+            position: relative;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 30%;
+            right: 30%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-accent), transparent);
+        }
+        
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .app-container {
+                grid-template-columns: 220px 1fr 280px;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .app-container {
+                grid-template-columns: 180px 1fr 220px;
+                min-height: 600px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr auto;
+                max-height: 90vh;
+            }
+            
+            .settings-panel, .main-content, .notes-panel {
+                border-right: none;
+                border-bottom: 1px solid var(--border-accent);
+            }
+            
+            .settings-panel {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .settings-header {
+                flex: 1 1 100%;
+                margin-bottom: 0;
+            }
+            
+            .slider-container {
+                flex: 1 1 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                gap: 10px;
+            }
+            
+            .slider-info {
+                flex: 1 1 100%;
+                margin-bottom: 0;
+            }
+            
+            .slider-block {
+                flex: 1 1 45%;
+                min-width: 120px;
+            }
+            
+            .new-case-btn {
+                flex: 1 1 100%;
+                margin-top: 5px;
+            }
+            
+            .client-image {
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Settings Panel -->
+        <div class="settings-panel">
+            <div class="settings-header">Settings</div>
+            
+            <div class="slider-container">
+                <div class="slider-info">each setting has a sliding scale from 1 to 10</div>
+                
+                <div class="slider-block">
+                    <div class="slider-label">
+                        <span>Complexity</span>
+                        <span class="slider-value">5</span>
+                    </div>
+                    <input type="range" min="1" max="10" value="5" class="slider" id="complexity-slider">
+                </div>
+                
+                <div class="slider-block">
+                    <div class="slider-label">
+                        <span>Ambiguity</span>
+                        <span class="slider-value">3</span>
+                    </div>
+                    <input type="range" min="1" max="10" value="3" class="slider" id="ambiguity-slider">
+                </div>
+                
+                <div class="slider-block">
+                    <div class="slider-label">
+                        <span>Client Depth</span>
+                        <span class="slider-value">2</span>
+                    </div>
+                    <input type="range" min="1" max="10" value="2" class="slider" id="depth-slider">
+                </div>
+                
+                <div class="slider-block">
+                    <div class="slider-label">
+                        <span>Client Awareness</span>
+                        <span class="slider-value">7</span>
+                    </div>
+                    <input type="range" min="1" max="10" value="7" class="slider" id="awareness-slider">
+                </div>
+            </div>
+            
+            <button class="new-case-btn">New Case</button>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="title-bar">Case Trainer: Neuro</div>
+            
+            <div class="client-image">
+                Generated Client Image<br>(we'll connect an image generator to this section in the backend)
+            </div>
+            
+            <div class="chat-container">
+                <div class="chat-header">Chat Dialogue with Custom GPT</div>
+                
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Messages will be added here by the API -->
+                </div>
+                
+                <div class="chat-input">
+                    <input type="text" id="user-input" placeholder="Type your message here...">
+                    <button id="send-btn">Send</button>
+                </div>
+                
+                <button class="download-btn" title="Download Dialogue">
+                    <svg class="download-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Notes Panel -->
+        <div class="notes-panel">
+            <div class="notes-title">Editable Notes</div>
+            <textarea class="notes-textarea" placeholder="Type your notes here..."></textarea>
+            
+            <div class="controls">
+                <button class="control-btn" title="Copy">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+                
+                <button class="control-btn" title="Paste">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    </svg>
+                </button>
+                
+                <button class="control-btn" title="Download">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            Legal Disclaimer/other fine print/version/copyright
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userInput = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            const chatMessages = document.getElementById('chat-messages');
+            const newCaseBtn = document.querySelector('.new-case-btn');
+            const downloadBtn = document.querySelector('.download-btn');
+            const notesTextarea = document.querySelector('.notes-textarea');
+            const copyBtn = document.querySelector('.control-btn[title="Copy"]');
+            const pasteBtn = document.querySelector('.control-btn[title="Paste"]');
+            const downloadNotesBtn = document.querySelector('.control-btn[title="Download"]');
+            
+            // Set up dynamic slider values
+            const sliders = document.querySelectorAll('.slider');
+            sliders.forEach(slider => {
+                const valueDisplay = slider.parentElement.querySelector('.slider-value');
+                slider.addEventListener('input', function() {
+                    valueDisplay.textContent = this.value;
+                });
+            });
+            
+            // Function to handle the New Case button
+            function handleNewCase() {
+                // Clear chat messages
+                chatMessages.innerHTML = '';
+                
+                // Get slider values
+                const complexity = document.getElementById('complexity-slider').value;
+                const ambiguity = document.getElementById('ambiguity-slider').value;
+                const depth = document.getElementById('depth-slider').value;
+                const awareness = document.getElementById('awareness-slider').value;
+                
+                // In a real implementation, this would send these parameters to your GPT API
+                console.log('New case parameters:', {
+                    complexity, ambiguity, clientDepth: depth, clientAwareness: awareness
+                });
+                
+                // Display a placeholder message until the API is connected
+                const placeholderMessage = document.createElement('div');
+                placeholderMessage.className = 'message assistant-message';
+                placeholderMessage.textContent = 'New case will be generated with your custom GPT based on the selected parameters.';
+                chatMessages.appendChild(placeholderMessage);
+            }
+            
+            // Function to handle sending a message
+            function handleSendMessage
